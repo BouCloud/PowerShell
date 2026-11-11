@@ -18,16 +18,10 @@
     - Exporte le rapport dans un fichier Excel :
         C:\temp\Licenses_Report_yyyy_MM_dd.xlsx
 
-    IMPORTANT :
+    Remarques :
         - PowerShell ISE n’est pas supporté pour Microsoft.Graph.
           Ce script ne s’exécute pas dans ISE.
-        - Pour éviter que la fenêtre PowerShell se ferme automatiquement
-          (surtout en cas d’erreur ou de fermeture de la fenêtre de connexion),
-          il est recommandé de :
-            * soit ouvrir manuellement une console PowerShell puis lancer :
-                  .\NomDuScript.ps1
-            * soit utiliser un raccourci avec :
-                  powershell.exe -NoExit -ExecutionPolicy Bypass -File "C:\Chemin\NomDuScript.ps1"
+        - Merci de relire et adapter le code à votre contexte avant utilisation en production.
 
 .AUTEUR
     Christian BOUSQUET
@@ -45,13 +39,14 @@ $AuthMode = "Interactive"
 
 # Petite fonction de pause uniquement en cas d’erreur, et uniquement si la session est interactive
 function Pause-IfInteractive {
+    # UserInteractive = True => session avec UI (pas tâche planifiée en arrière-plan)
     if ([Environment]::UserInteractive -and $Host.Name -eq 'ConsoleHost') {
         try {
             Write-Host ""
             Read-Host "Une erreur est survenue. Appuyez sur Entrée pour fermer cette fenêtre"
         }
         catch {
-            # En mode non interactif (tâche planifiée, etc.), on ignore l'erreur éventuelle.
+            # Si jamais Read-Host pose problème en non interactif, on ignore.
         }
     }
 }
@@ -71,11 +66,6 @@ if ($psISE) {
     Read-Host "Appuyez sur Entrée pour quitter"
     return
 }
-
-# Recommandation d’exécution
-Write-Host "Conseil : pour éviter que la fenêtre se ferme, lancez ce script depuis une console déjà ouverte" -ForegroundColor DarkGray
-Write-Host "          ou via un raccourci du type : powershell.exe -NoExit -File ""C:\Chemin\NomDuScript.ps1""" -ForegroundColor DarkGray
-Write-Host ""
 
 # Version minimale recommandée
 $minVersion = [version]'5.1'
@@ -423,3 +413,4 @@ $result | Export-Excel -Path $excelPath -AutoSize -WorksheetName "Licences365" -
 Write-Host "  - Rapport Excel exporté vers : $excelPath" -ForegroundColor Green
 
 #endregion
+pause
